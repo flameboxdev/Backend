@@ -1,4 +1,4 @@
-import express from "express";
+import express, { json } from "express";
 import fs from "fs";
 import cors from "cors";
 
@@ -6,6 +6,7 @@ const app = express();
 const PORT = 8000;
 const JSON_FILE_PATH = "./data/elems.json"; // Path to elements JSON file
 const LOG_JSON_FILE_FATH = "./data/log.json"; // Path to log JSON file
+const AUTH_JSON_FILE_PATH = "./data/auth.json"; // Path to auth JSON file
 
 app.use(express.json());
 app.use(cors());
@@ -137,6 +138,29 @@ app.get("/log", (req, res) => {
 
         // Send the modified data as a JSON response
         res.json(jsonData);
+      } catch (error) {
+        res.status(500).json({ error: "Failed to parse the JSON data" });
+      }
+    }
+  });
+});
+
+app.post("/auth", (req, res) => {
+  const login = req.body.login;
+  const password = req.body.password;
+
+  fs.readFile(AUTH_JSON_FILE_PATH, "utf-8", (err, data) => {
+    if (err) {
+      res.status(500).json({ error: "Failed to read the JSON file" });
+    } else {
+      try {
+        const jsonData = JSON.parse(data);
+
+        if (jsonData.login === login && jsonData.password == password) {
+          res.json({ authorized: true });
+        } else {
+          res.status(500).json({ error: "Authorization failed" });
+        }
       } catch (error) {
         res.status(500).json({ error: "Failed to parse the JSON data" });
       }
