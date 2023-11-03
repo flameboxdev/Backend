@@ -1,1 +1,10 @@
-[{"date":"2 ноя. 2023","time":"13 : 41","access":0,"identifier":1},{"date":"2 ноя. 2023","time":"13 : 41","access":1,"identifier":1},{"date":"2 ноя. 2023","time":"13 : 42","access":0,"identifier":38},{"date":"2 ноя. 2023","time":"13 : 42","access":1,"identifier":25},{"date":"2 ноя. 2023","time":"13 : 42","access":0,"identifier":7},{"date":"2 ноя. 2023","time":"15 : 46","access":1,"identifier":7},{"date":"2 ноя. 2023","time":"15 : 47","access":1,"identifier":9},{"date":"2 ноя. 2023","time":"16 : 19","access":0,"identifier":2}]
+[
+  { "date": "2 ноя. 2023", "time": "13 : 41", "access": 0, "identifier": 1 },
+  { "date": "2 ноя. 2023", "time": "13 : 41", "access": 1, "identifier": 1 },
+  { "date": "2 ноя. 2023", "time": "13 : 42", "access": 0, "identifier": 38 },
+  { "date": "2 ноя. 2023", "time": "13 : 42", "access": 1, "identifier": 25 },
+  { "date": "2 ноя. 2023", "time": "13 : 42", "access": 0, "identifier": 7 },
+  { "date": "2 ноя. 2023", "time": "15 : 46", "access": 1, "identifier": 7 },
+  { "date": "2 ноя. 2023", "time": "15 : 47", "access": 1, "identifier": 9 },
+  { "date": "2 ноя. 2023", "time": "16 : 19", "access": 0, "identifier": 2 }
+]

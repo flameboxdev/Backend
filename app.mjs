@@ -168,6 +168,38 @@ app.post("/auth", (req, res) => {
   });
 });
 
+// requests for embedded
+app.get("/keys", (req, res) => {
+  fs.readFile(JSON_FILE_PATH, (err, data) => {
+    if (err) {
+      // Handle errors, e.g., file not found
+      res.status(500).json({ error: "Failed to read the JSON file" });
+    } else {
+      try {
+        // Parse the JSON data
+        const jsonData = JSON.parse(data);
+
+        // Array of keys with access 1
+        let array = [];
+
+        // Iterate over array and look for key with access 1
+        for (const item of jsonData) {
+          if (item.access == 1) {
+            // Add key to array
+            array.push(item.key);
+          }
+        }
+
+        let strOfKeys = array.join("*");
+
+        res.send(strOfKeys);
+      } catch (error) {
+        res.status(500).json({ error: "Failed to parse the JSON data" });
+      }
+    }
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
 });
