@@ -33,8 +33,6 @@ app.get("/elems", (req, res) => {
 });
 
 app.post("/elem", (req, res) => {
-  const date = req.body.date;
-  const time = req.body.time;
   const id = req.body.id;
   const access = req.body.access;
   const key = req.body.key;
@@ -66,59 +64,6 @@ app.post("/elem", (req, res) => {
 
         // Send the modified data as a JSON response
         res.json({ result: "Success" });
-      } catch (error) {
-        res.status(500).json({ error: "Failed to parse the JSON data" });
-      }
-    }
-  });
-
-  fs.readFile(LOG_JSON_FILE_FATH, "utf-8", (err, data) => {
-    if (err) {
-      // Handle errors, e.g., file not found
-      res.status(500).json({ error: "Failed to read the JSON file" });
-    } else {
-      try {
-        const jsonLogData = JSON.parse(data);
-
-        const newEventObj = {
-          date: date,
-          time: time,
-          access: access,
-          identifier: key,
-        };
-
-        fs.readFile(JSON_FILE_PATH, "utf-8", (err, data) => {
-          if (err) {
-            // Handle errors, e.g., file not found
-            res.status(500).json({ error: "Failed to read the JSON file" });
-          } else {
-            // Parse the JSON data
-            const jsonData = JSON.parse(data);
-
-            // Iterate over array and try to get id of element
-            for (const item of jsonData) {
-              if (item.key == key) {
-                // Add to event object id as identifier
-                newEventObj.identifier = item.id;
-                break; // Exit the loop once the operation is done
-              }
-            }
-
-            jsonLogData.push(newEventObj);
-
-            fs.writeFile(
-              LOG_JSON_FILE_FATH,
-              JSON.stringify(jsonLogData),
-              (err) => {
-                if (err) {
-                  res
-                    .status(500)
-                    .json({ error: "Failed to update the JSON file" });
-                }
-              }
-            );
-          }
-        });
       } catch (error) {
         res.status(500).json({ error: "Failed to parse the JSON data" });
       }
@@ -193,6 +138,66 @@ app.get("/keys", (req, res) => {
         let strOfKeys = array.join("*");
 
         res.send(strOfKeys);
+      } catch (error) {
+        res.status(500).json({ error: "Failed to parse the JSON data" });
+      }
+    }
+  });
+});
+
+app.post("/logEmbedded", (req, res) => {
+  fs.readFile(LOG_JSON_FILE_FATH, "utf-8", (err, data) => {
+    if (err) {
+      // Handle errors, e.g., file not found
+      res.status(500).json({ error: "Failed to read the JSON file" });
+    } else {
+      try {
+        const jsonLogData = JSON.parse(data);
+
+        fs.readFile(JSON_FILE_PATH, "utf-8", (err, data) => {
+          if (err) {
+            // Handle errors, e.g., file not found
+            res.status(500).json({ error: "Failed to read the JSON file" });
+          } else {
+            // events from embedded
+            let eventsArray = req.body;
+
+            // Parse the JSON data
+            const jsonData = JSON.parse(data);
+
+            // Iterate over events array from embedded
+            eventsArray.forEach((el) => {
+              let accessOfEvent = null;
+
+              // Iterate over array and try to get id of element
+              for (const item of jsonData) {
+                if (item.key == el.identifier) {
+                  // Add to event object id as identifier
+                  el.identifier = item.id;
+                  accessOfEvent = item.access;
+                  break; // Exit the loop once the operation is done
+                }
+              }
+
+              el.access = accessOfEvent;
+              jsonLogData.push(el);
+            });
+
+            fs.writeFile(
+              LOG_JSON_FILE_FATH,
+              JSON.stringify(jsonLogData),
+              (err) => {
+                if (err) {
+                  res
+                    .status(500)
+                    .json({ error: "Failed to update the JSON file" });
+                } else {
+                  res.json({ result: "Success" });
+                }
+              }
+            );
+          }
+        });
       } catch (error) {
         res.status(500).json({ error: "Failed to parse the JSON data" });
       }
