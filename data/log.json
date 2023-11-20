@@ -1,16 +1,16 @@
 [
-  { "date": "2 ноя. 2023", "time": "15 : 47", "identifier": 4, "access": 1 },
+  { "date": "2 ноя", "time": "15 : 47", "identifier": 4, "access": 1 },
   {
-    "date": "2 ноя. 2023",
+    "date": "2 ноя",
     "time": "16 : 19",
-    "identifier": 44444,
-    "access": null
+    "identifier": 8,
+    "access": 0
   },
-  { "date": "10 ноя. 2023", "time": "16 : 54", "identifier": 3, "access": 0 },
+  { "date": "10 ноя", "time": "16 : 54", "identifier": 3, "access": 0 },
   {
     "date": "10 ноя. 2023",
     "time": "16 : 54",
     "identifier": 11111,
-    "access": null
+    "access": 0
   }
 ]

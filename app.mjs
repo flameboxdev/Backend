@@ -48,7 +48,7 @@ app.post("/elem", (req, res) => {
 
         // Iterate over array and change element data
         for (const item of jsonData) {
-          if (item.id == id) {
+          if (item.id === id) {
             // Change the id value to a new value (e.g., 10)
             item.access = access;
             item.key = Number(key);
@@ -71,24 +71,18 @@ app.post("/elem", (req, res) => {
   });
 });
 
-app.get("/log", (req, res) => {
-  fs.readFile(LOG_JSON_FILE_FATH, "utf-8", (err, data) => {
-    if (err) {
-      // Handle errors, e.g., file not found
-      res.status(500).json({ error: "Failed to read the JSON file" });
-    } else {
-      try {
-        // Parse the JSON data
-        const jsonData = JSON.parse(data);
+app.get("/log", (req, res) =>
 
-        // Send the modified data as a JSON response
-        res.json(jsonData);
-      } catch (error) {
+// запрос журнала событий с фронта
+{
+  const jsonData = EventParse(LOG_JSON_FILE_FATH);
+      if (jsonData) {
+        res.json(jsonData); // Отпрвка журнала событий на фронт
+      } else {
         res.status(500).json({ error: "Failed to parse the JSON data" });
       }
-    }
-  });
 });
+
 
 app.post("/auth", (req, res) => {
   const login = req.body.login;
@@ -112,6 +106,8 @@ app.post("/auth", (req, res) => {
     }
   });
 });
+
+
 
 // requests for embedded
 app.get("/keys", (req, res) => {
@@ -145,66 +141,98 @@ app.get("/keys", (req, res) => {
   });
 });
 
+
+
 app.post("/logEmbedded", (req, res) => {
-  fs.readFile(LOG_JSON_FILE_FATH, "utf-8", (err, data) => {
+
+    try {
+       let eventsArray = req.body; // читает журнал переданный от контроллера
+
+        fs.writeFile(LOG_JSON_FILE_FATH, JSON.stringify(eventsArray),(err) => {
+        if (err) {
+         res
+          .status(500)
+          .json({error: "Failed to update the JSON file"});
+         } else res.json({result: "Success"});
+        });
+  }
+          catch (error) {
+            res.status(500).json({error: "Failed to parse the JSON data"});
+          };
+});
+
+function EventParse (fileName) {
+  fs.readFile(fileName, "utf-8", (err, data) => {
     if (err) {
       // Handle errors, e.g., file not found
-      res.status(500).json({ error: "Failed to read the JSON file" });
+      console.log("Failed to read the JSON file");
+      return null;
     } else {
       try {
-        const jsonLogData = JSON.parse(data);
+        // Parse the JSON data
+        const jsonData = JSON.parse(data); // Парсинг файла в json
 
-        fs.readFile(JSON_FILE_PATH, "utf-8", (err, data) => {
-          if (err) {
-            // Handle errors, e.g., file not found
-            res.status(500).json({ error: "Failed to read the JSON file" });
-          } else {
-            // events from embedded
-            let eventsArray = req.body;
+        return jsonData;
 
-            // Parse the JSON data
-            const jsonData = JSON.parse(data);
-
-            // Iterate over events array from embedded
-            eventsArray.forEach((el) => {
-              let accessOfEvent = null;
-
-              // Iterate over array and try to get id of element
-              for (const item of jsonData) {
-                if (item.key == el.identifier) {
-                  // Add to event object id as identifier
-                  el.identifier = item.id;
-                  accessOfEvent = item.access;
-                  break; // Exit the loop once the operation is done
-                }
-              }
-
-              el.access = accessOfEvent;
-              jsonLogData.push(el);
-            });
-
-            fs.writeFile(
-              LOG_JSON_FILE_FATH,
-              JSON.stringify(jsonLogData),
-              (err) => {
-                if (err) {
-                  res
-                    .status(500)
-                    .json({ error: "Failed to update the JSON file" });
-                } else {
-                  res.json({ result: "Success" });
-                }
-              }
-            );
-          }
-        });
-      } catch (error) {
-        res.status(500).json({ error: "Failed to parse the JSON data" });
+      }
+      catch (error) {
+        return null;
       }
     }
   });
-});
+}
+
+
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
 });
+
+/*
+const jsonData = EventParse(JSON_FILE_PATH);
+const jsonLogData = EventParse(LOG_JSON_FILE_FATH);
+
+ */
+
+/*
+
+
+// Iterate over array and try to get id of element
+for (const item of jsonData) {
+  if (item.key == el.identifier) {
+    // Add to event object id as identifier
+    el.identifier = item.id;
+    accessOfEvent = item.access;
+    break; // Exit the loop once the operation is done
+  }
+}
+
+el.access = accessOfEvent;
+jsonLogData.push(el);
+});
+
+
+
+*/
+/*
+формирование журнала
+
+
+
+function IterateEvent (jKeyData, jLogData)
+{
+    let accessOfEvent = null;
+
+    // Iterate over array and try to get id of element
+    for (const item of jKeyData) {
+      if (item.key === el.identifier) {
+        // Add to event object id as identifier
+        el.identifier = item.id;
+        accessOfEvent = item.access;
+        break; // Exit the loop once the operation is done
+      }
+    }
+
+    el.access = accessOfEvent;
+    jLogData.push(el);
+  });    */
